@@ -1,0 +1,745 @@
+@import "tailwindcss";
+
+/* ================================================================
+   PERFECT LOOK — DESIGN TOKENS
+   ================================================================ */
+@theme {
+  /* Colour */
+  --color-ink: #090909;
+  --color-charcoal: #151515;
+  --color-graphite: #1f1f1f;
+  --color-line: #2b2925;
+  --color-gold: #c9a96e;
+  --color-gold-soft: #dcc497;
+  --color-gold-deep: #9c7f4c;
+  --color-beige: #e8dcc8;
+  --color-ivory: #f5f1ea;
+  --color-mist: #a39e95;
+
+  /* Type families (set by next/font in layout.tsx) */
+  --font-display: var(--font-cormorant), "Times New Roman", serif;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+
+  /* Fluid type scale — phone → desktop */
+  --text-hero: clamp(2.6rem, 1.4rem + 6.2vw, 7.5rem);
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.01em;
+  --text-display: clamp(2.15rem, 1.4rem + 3.6vw, 4.5rem);
+  --text-display--line-height: 1.02;
+  --text-title: clamp(1.4rem, 1.15rem + 1vw, 2rem);
+  --text-title--line-height: 1.2;
+  --text-lead: clamp(1.02rem, 0.95rem + 0.35vw, 1.2rem);
+  --text-lead--line-height: 1.7;
+  --text-label: 0.7rem;
+  --text-label--letter-spacing: 0.32em;
+
+  /* Motion */
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-silk: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Shape */
+  --radius-xs: 2px;
+}
+
+:root {
+  /* Metallic champagne gold: light catches the top, deepens toward the base */
+  --gold-metal: linear-gradient(180deg, #eedcb4 0%, #d6b97f 38%, #c9a96e 58%, #a3864f 100%);
+  /* Soft highlight band that sweeps across once (never loops) */
+  --gold-band: linear-gradient(105deg, transparent 38%, rgba(255, 247, 226, 0.9) 50%, transparent 62%);
+}
+
+/* ================================================================
+   BASE
+   ================================================================ */
+@layer base {
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-ink);
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-gold);
+    outline-offset: 4px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  /* Headline letters simply appear — no tilt, blur or stagger */
+  .hero-c,
+  .hero-split .split-w {
+    animation: none !important;
+  }
+}
+
+/* ================================================================
+   UTILITIES
+   ================================================================ */
+
+/* Small uppercase eyebrow label */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-gold);
+}
+
+/* Metallic champagne-gold text with a slow, occasional shine sweep */
+@utility text-gold-sheen {
+  background: var(--gold-band), var(--gold-metal);
+  background-size:
+    250% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    150% 0,
+    0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-sweep 2.4s var(--ease-silk) 1.2s 1 both;
+}
+
+/* Thin gold hairline */
+@utility hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* Subtle film grain for cinematic depth */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+}
+
+/* Animated underline for text links */
+@utility link-underline {
+  background-image: linear-gradient(var(--color-gold), var(--color-gold));
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.6s var(--ease-luxe), color 0.3s ease;
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+/* ================================================================
+   KEYFRAMES
+   ================================================================ */
+@keyframes scrollcue-x {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* Hero entrance */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-fade {
+  animation: fade-rise 1.2s var(--ease-luxe) both;
+  animation-delay: calc(var(--intro, 0s) + var(--d, 0s));
+}
+
+/* ================================================================
+   INTRO LOADER (at most once every 12 hours)
+   ================================================================ */
+html[data-loader="show"] {
+  --intro: 1.4s;
+}
+.pl-loader {
+  display: none;
+}
+html[data-loader="show"] .pl-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ink);
+  clip-path: inset(0 0 0 0);
+  animation: loader-out 0.9s var(--ease-silk) 1.15s forwards;
+}
+.pl-loader-ring {
+  stroke-dasharray: 142;
+  stroke-dashoffset: 142;
+  transform: rotate(-90deg);
+  transform-origin: 24px 24px;
+  animation: ring-draw 1.05s var(--ease-silk) 0.05s forwards;
+}
+.pl-loader-mark {
+  opacity: 0;
+  animation: fade-in 0.8s ease 0.3s forwards;
+}
+.pl-loader-bar {
+  transform: scaleX(0);
+  animation: bar-grow 1.05s var(--ease-silk) 0.1s forwards;
+}
+.pl-loader-name {
+  opacity: 0;
+  animation: fade-in 0.8s ease 0.45s forwards;
+}
+@keyframes ring-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes bar-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes loader-out {
+  to {
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+  }
+}
+
+/* ================================================================
+   SCROLL REVEAL START STATES (only when JS is running — see layout.tsx)
+   ================================================================ */
+.js [data-reveal="up"]:not(.is-in),
+.js [data-reveal="stagger"]:not(.is-in) > * {
+  opacity: 0;
+  transform: translateY(36px);
+}
+.js [data-reveal="image"]:not(.is-in) {
+  clip-path: inset(100% 0 0 0);
+}
+.js [data-reveal="line"]:not(.is-in) {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-reveal] > *,
+  .js [data-split] .split-wi,
+  .js [data-split] .split-c {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  html[data-loader="show"] .pl-loader {
+    display: none;
+  }
+}
+
+/* Smooth scroll (Lenis) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis {
+  scroll-behavior: auto;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Mobile menu entrance */
+@keyframes menu-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+#mobile-menu:not([hidden]) {
+  animation: menu-in 0.75s var(--ease-luxe) both;
+}
+#mobile-menu:not([hidden]) [data-menu-item] {
+  animation: fade-rise 0.9s var(--ease-luxe) both;
+  animation-delay: calc(0.18s + var(--i, 0) * 0.07s);
+}
+
+/* Final CTA: slow-turning golden light */
+.cta-orb {
+  background: conic-gradient(
+    from 0deg,
+    rgba(201, 169, 110, 0.35),
+    transparent 30%,
+    rgba(232, 220, 200, 0.16) 55%,
+    transparent 75%,
+    rgba(201, 169, 110, 0.35)
+  );
+  animation: orb-spin 28s linear infinite;
+}
+@keyframes orb-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* FAQ accordion: smooth open/close where supported */
+.faq::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 0.6s var(--ease-luxe),
+    content-visibility 0.6s allow-discrete;
+}
+.faq[open]::details-content {
+  block-size: auto;
+}
+:root {
+  interpolate-size: allow-keywords;
+}
+
+/* ================================================================
+   TYPOGRAPHY — split text, metallic gold, emphasis, hover roll
+   ================================================================ */
+h1,
+h2,
+h3 {
+  font-kerning: normal;
+  font-feature-settings: "kern", "liga", "clig";
+}
+
+/* One elegant pass of light across gold text (then it rests — no constant repainting) */
+@keyframes gold-sweep {
+  from {
+    background-position:
+      150% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -50% 0,
+      0 0;
+  }
+}
+
+/* Split pieces */
+.split-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+.split-wi,
+.split-c {
+  display: inline-block;
+}
+.split-wi {
+  transform-origin: 0% 100%;
+}
+
+/* Gold accents inside split headings: each word/letter carries the metal gradient */
+.text-gold-sheen:has(.split-wi, .split-c) {
+  background: none;
+  animation: none;
+  color: inherit;
+}
+.text-gold-sheen .split-wi,
+.text-gold-sheen .split-c,
+.hero-c.metal {
+  background: var(--gold-band), var(--gold-metal);
+  background-size:
+    250% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    150% 0,
+    0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Split headings: the light sweeps across the gold words once, right after they reveal */
+[data-split].is-in .text-gold-sheen .split-wi,
+[data-split].is-in .text-gold-sheen .split-c,
+html:not(.js) .text-gold-sheen .split-wi {
+  animation: gold-sweep 2.2s var(--ease-silk) both;
+  animation-delay: calc(0.35s + var(--i, 0) * 0.1s);
+}
+
+/* --- HERO: letters tilt up in 3D, blur → sharp, then the gold shines --- */
+.hero-split .split-w {
+  perspective: 800px;
+  animation: word-blur 1.1s ease-out both;
+  animation-delay: calc(var(--intro, 0s) + 0.2s + var(--w, 0) * 0.16s);
+}
+@keyframes word-blur {
+  from {
+    filter: blur(10px);
+  }
+  to {
+    filter: none;
+  }
+}
+.hero-c {
+  transform-origin: 50% 100%;
+  animation: char-in 1.5s var(--ease-luxe) both;
+  animation-delay: calc(var(--intro, 0s) + 0.25s + var(--i, 0) * 0.03s);
+}
+@keyframes char-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.55em, 0) rotateX(-72deg) rotateZ(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Hero gold letters: rise in, then one slow sweep of light travels across "PERFECT LOOK." */
+.hero-c.metal {
+  animation:
+    char-in 1.5s var(--ease-luxe) both,
+    gold-sweep 2.6s var(--ease-silk) 1 both;
+  animation-delay:
+    calc(var(--intro, 0s) + 0.25s + var(--i, 0) * 0.03s),
+    calc(var(--intro, 0s) + 1.9s + (var(--i, 0) - 20) * 0.07s);
+}
+/* --- Masks for rise-in styles (padding keeps descenders/italics unclipped) --- */
+[data-split="words"] .split-w,
+[data-split="chars"] .split-w {
+  overflow: clip;
+  vertical-align: bottom;
+  padding: 0 0.1em 0.12em 0;
+  margin-right: -0.1em;
+}
+[data-split="chars"] .split-w {
+  perspective: 600px;
+}
+
+/* --- Start states before reveal (only when JS runs; see layout boot script) --- */
+.js [data-split="words"]:not(.is-in) .split-wi {
+  transform: translateY(115%) rotate(5deg);
+}
+.js [data-split="blur"]:not(.is-in) .split-wi {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(16px);
+}
+.js [data-split="clip"]:not(.is-in) .split-wi {
+  clip-path: inset(0 100% 0 0);
+  transform: translateX(-10px);
+}
+.js [data-split="chars"]:not(.is-in) .split-c {
+  opacity: 0;
+  transform: translateY(110%) rotateX(-85deg);
+}
+.js [data-split="scatter"]:not(.is-in) .split-c {
+  opacity: 0;
+}
+.js [data-split="scrub"] .split-wi {
+  opacity: 0.4;
+}
+
+/* --- Emphasised words in statements: turn gold + underline draws --- */
+.emph {
+  position: relative;
+}
+.emph .split-wi {
+  transition: color 0.9s var(--ease-luxe);
+}
+.emph::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0.1em;
+  bottom: 0.04em;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-soft));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1.2s var(--ease-luxe) 0.1s;
+}
+.emph.is-lit .split-wi,
+html:not(.js) .emph .split-wi {
+  color: var(--color-gold-soft);
+}
+.emph.is-lit::after,
+html:not(.js) .emph::after {
+  transform: scaleX(1);
+}
+
+/* --- Hover roll: letters slide up and a gold copy (::after) rolls in --- */
+.roll {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.roll-c {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  transition: transform 0.6s var(--ease-luxe);
+}
+.roll-c::after {
+  content: attr(data-c);
+  position: absolute;
+  left: 0;
+  top: 105%;
+  color: var(--color-gold);
+}
+@media (hover: hover) {
+  :is(a, button):hover .roll-c {
+    transform: translateY(-105%);
+  }
+}
+:is(a, button):focus-visible .roll-c {
+  transform: translateY(-105%);
+}
+
+/* ================================================================
+   AMBIENT MOTION — cursor, tickers, orbs, shine, tilt, wordmark
+   ================================================================ */
+
+/* Gold cursor (mouse/trackpad only; added by Cursor.tsx) */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 9999px;
+  translate: -50% -50%;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-gold);
+  transition: width 0.3s var(--ease-luxe), height 0.3s var(--ease-luxe), background-color 0.3s;
+}
+.cursor-dot.is-hover {
+  width: 0;
+  height: 0;
+}
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(201, 169, 110, 0.6);
+  transition: width 0.45s var(--ease-luxe), height 0.45s var(--ease-luxe), background-color 0.45s, border-color 0.45s,
+    scale 0.2s;
+}
+.cursor-ring.is-hover {
+  width: 70px;
+  height: 70px;
+  background: rgba(201, 169, 110, 0.12);
+  border-color: var(--color-gold);
+}
+.cursor-ring.is-down {
+  scale: 0.85;
+}
+
+/* Endless ticker */
+.marquee-track {
+  will-change: transform;
+}
+.marquee-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201, 169, 110, 0.75);
+}
+
+/* Floating light orbs */
+.ambient-orb {
+  position: absolute;
+  width: clamp(18rem, 40vw, 38rem);
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(201, 169, 110, 0.13), rgba(201, 169, 110, 0.04) 55%, transparent);
+  will-change: transform;
+}
+.ambient-1 {
+  animation: orb-float-a 22s ease-in-out infinite alternate;
+}
+.ambient-2 {
+  width: clamp(14rem, 30vw, 28rem);
+  background: radial-gradient(closest-side, rgba(232, 220, 200, 0.08), transparent);
+  animation: orb-float-b 27s ease-in-out infinite alternate;
+}
+.ambient-3 {
+  width: clamp(12rem, 24vw, 22rem);
+  animation: orb-float-a 31s ease-in-out -9s infinite alternate-reverse;
+}
+@keyframes orb-float-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12vw, -6vh, 0) scale(1.15);
+  }
+  100% {
+    transform: translate3d(-4vw, 8vh, 0) scale(0.92);
+  }
+}
+@keyframes orb-float-b {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(-14vw, -10vh, 0) scale(0.9);
+  }
+}
+
+/* Light sweep across gold buttons on hover */
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 250, 235, 0.65) 50%, transparent 65%);
+  translate: -120% 0;
+  pointer-events: none;
+}
+.btn-shine:hover::after,
+.btn-shine:focus-visible::after {
+  translate: 120% 0;
+  transition: translate 0.9s var(--ease-luxe);
+}
+
+/* Placeholder frames: a slow light passes over now and then */
+.frame-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(110deg, transparent 40%, rgba(232, 220, 200, 0.06) 50%, transparent 60%);
+  translate: -100% 0;
+  animation: frame-sweep 7s var(--ease-silk) infinite;
+  pointer-events: none;
+}
+@keyframes frame-sweep {
+  0%,
+  55% {
+    translate: -100% 0;
+  }
+  100% {
+    translate: 100% 0;
+  }
+}
+
+/* 3D tilt card glare */
+[data-tilt] {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+[data-tilt-glare] {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(40% 40% at var(--gx, 50%) var(--gy, 50%), rgba(232, 220, 200, 0.14), transparent 70%);
+  transition: opacity 0.5s;
+}
+
+/* Icon ring: a gold arc circles the icon on hover */
+.icon-ring::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, var(--color-gold), transparent 35%, transparent 65%, var(--color-gold-soft));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 1px), #000 calc(100% - 1px));
+  opacity: 0;
+  transition: opacity 0.5s;
+  animation: orb-spin 3.5s linear infinite;
+}
+.group:hover .icon-ring::before {
+  opacity: 1;
+}
+.icon-ring svg {
+  transition: transform 0.7s var(--ease-luxe);
+}
+.group:hover .icon-ring svg {
+  transform: rotate(-12deg) scale(1.12);
+}
+
+/* Footer wordmark: outline that fills with gold while scrolling */
+.wordmark {
+  --fill: 0%;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201, 169, 110, 0.35);
+  background: linear-gradient(0deg, #d6b97f 0%, #c9a96e var(--fill), transparent var(--fill));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orb,
+  .frame-shimmer::after,
+  .icon-ring::before {
+    animation: none !important;
+  }
+  .wordmark {
+    --fill: 100%;
+  }
+}
